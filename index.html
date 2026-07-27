@@ -118,6 +118,11 @@ h1 {
     width: 100%;
 }
 
+.upload-box.dragover {
+    background: #4a1f1f;
+    border-color: #ef4444;
+}
+
 .upload-box:hover {
     background: #3f1f1f;
     border-color: var(--primary-hover);
@@ -346,7 +351,7 @@ footer {
         <h1>Upload Electricity Bill</h1>
         <p class="subtitle">Upload PDF, JPG or PNG and let AI instantly analyze your energy usage.</p>
 
-        <label class="upload-box">
+        <label class="upload-box" id="dropArea">
             <div class="icon">📄</div>
             <h2>Drag & Drop Bill Here</h2>
             <p>or</p>
@@ -374,10 +379,10 @@ footer {
         </div>
 
         <div class="buttons">
-            <button class="upload" onclick="uploadFile()">Upload</button>
-            <button class="analyze">Analyze</button>
+            <button class="upload" onclick="processBill(event)">Upload</button>
+            <button class="analyze" onclick="processBill(event)">Analyze</button>
             <button class="reset" onclick="location.reload()">Reset</button>
-            <button class="download">Download</button>
+            <button class="download" onclick="processBill(event)">Download</button>
         </div>
     </div>
 
@@ -420,22 +425,53 @@ footer {
 </footer>
 
 <script>
-    // Point this to your local running Uvicorn server
+    // Active ngrok tunnel link
     const BACKEND_URL = "https://stunning-frayed-quiver.ngrok-free.dev"; 
 
     const fileInput = document.getElementById("fileInput");
+    const dropArea = document.getElementById("dropArea");
 
-    // Display file details when a user selects a PDF
-    fileInput.addEventListener("change", function() {
-        if (this.files.length) {
-            let file = this.files[0];
+    function updateFileDetails(file) {
+        if (file) {
             document.getElementById("filename").innerText = file.name;
             document.getElementById("filesize").innerText = (file.size / 1024).toFixed(2) + " KB";
-            document.getElementById("filetype").innerText = file.type || "Application/pdf";
+            document.getElementById("filetype").innerText = file.type || "application/pdf";
+        }
+    }
+
+    // Display file details on manual browse select
+    fileInput.addEventListener("change", function() {
+        if (this.files.length) {
+            updateFileDetails(this.files[0]);
         }
     });
 
-    // Make the custom browse button trigger the hidden file selector
+    // Drag and Drop functionality
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        }, false);
+    });
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropArea.addEventListener(eventName, () => dropArea.classList.add('dragover'), false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, () => dropArea.classList.remove('dragover'), false);
+    });
+
+    dropArea.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        if (files.length) {
+            fileInput.files = files;
+            updateFileDetails(files[0]);
+        }
+    });
+
+    // Browse button handler
     const browseBtn = document.querySelector(".browse-btn");
     if (browseBtn) {
         browseBtn.onclick = function(e) {
@@ -444,61 +480,61 @@ footer {
         };
     }
 
-    // Connect the Analyze button to your backend
-    const analyzeBtn = document.querySelector(".analyze");
-    if (analyzeBtn) {
-        analyzeBtn.onclick = async function(e) {
-            e.preventDefault();
+    // Process & Analyze function
+    async function processBill(e) {
+        if (e) e.preventDefault();
 
-            if (!fileInput.files.length) {
-                alert("Please select a PDF bill to analyze first.");
-                return;
+        if (!fileInput.files.length) {
+            alert("Please select a PDF bill to analyze first.");
+            return;
+        }
+
+        const targetFile = fileInput.files[0];
+        const formData = new FormData();
+        formData.append("file", targetFile);
+
+        const loaderWrapper = document.getElementById("progress");
+        const activeBar = document.getElementById("bar");
+        if (loaderWrapper) loaderWrapper.style.display = "block";
+        if (activeBar) activeBar.style.width = "40%";
+
+        try {
+            // Send request to backend via ngrok with warning bypass header
+            const response = await fetch(`${BACKEND_URL}/extract_bill/`, {
+                method: "POST",
+                headers: {
+                    "ngrok-skip-browser-warning": "true"
+                },
+                body: formData
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Server returned error ${response.status}: ${errorText}`);
             }
 
-            const targetFile = fileInput.files[0];
-            const formData = new FormData();
-            formData.append("file", targetFile);
+            if (activeBar) activeBar.style.width = "100%";
 
-            // Handle progress bar UI if they exist in your HTML
-            const loaderWrapper = document.getElementById("progress");
-            const activeBar = document.getElementById("bar");
-            if (loaderWrapper) loaderWrapper.style.display = "block";
-            if (activeBar) activeBar.style.width = "50%";
+            // Download extracted CSV
+            const dataBlob = await response.blob();
+            const blobUrl = window.URL.createObjectURL(dataBlob);
+            
+            const downloader = document.createElement("a");
+            downloader.href = blobUrl;
+            downloader.download = `extracted_${targetFile.name.replace('.pdf', '')}.csv`;
+            document.body.appendChild(downloader);
+            downloader.click();
+            downloader.remove();
 
-            try {
-                // Send the file over the local network to Uvicorn
-                const response = await fetch(`${BACKEND_URL}/api/process-bill`, {
-                    method: "POST",
-                    body: formData
-                });
+            setTimeout(() => { 
+                alert("Success! The bill details were parsed, backed up to Mega.io, and your CSV has been downloaded."); 
+            }, 200);
 
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.detail || "Failed to process bill.");
-                }
-
-                if (activeBar) activeBar.style.width = "100%";
-
-                // Receive the CSV and trigger an automatic browser download
-                const dataBlob = await response.blob();
-                const blobUrl = window.URL.createObjectURL(dataBlob);
-                
-                const downloader = document.createElement("a");
-                downloader.href = blobUrl;
-                downloader.download = `extracted_${targetFile.name.replace('.pdf', '')}.csv`;
-                document.body.appendChild(downloader);
-                downloader.click();
-                downloader.remove();
-
-                setTimeout(() => { 
-                    alert("Success! The bill details were parsed, backed up to Mega, and your CSV is downloaded."); 
-                }, 200);
-
-            } catch (error) {
-                alert(`Error: ${error.message}`);
-                if (activeBar) activeBar.style.width = "0%";
-            }
-        };
+        } catch (error) {
+            console.error("Extraction error:", error);
+            alert(`Error processing bill: ${error.message}\nMake sure Uvicorn and ngrok are running!`);
+            if (activeBar) activeBar.style.width = "0%";
+        }
     }
 </script>
 

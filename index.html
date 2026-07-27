@@ -3,19 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Electricity Bill Analyzer</title>
+<title>AI Electricity Bill Analyzer - Consolidated Export</title>
 
 <style>
 :root {
-    --bg-main: #0f172a;        /* Deep charcoal/black */
-    --bg-surface: #1e293b;     /* Card surface black */
+    --bg-main: #0f172a;        
+    --bg-surface: #1e293b;     
     --bg-surface-hover: #273549; 
-    --primary: #dc2626;        /* Crimson Red */
-    --primary-hover: #b91c1c;  /* Darker Red */
+    --primary: #dc2626;        
+    --primary-hover: #b91c1c;  
     --success: #16a34a;
-    --text-main: #f8fafc;      /* Crisp white text */
-    --text-muted: #94a3b8;     /* Muted grey text */
-    --border: #334155;         /* Subtle border line */
+    --text-main: #f8fafc;      
+    --text-muted: #94a3b8;     
+    --border: #334155;         
 }
 
 * {
@@ -31,7 +31,6 @@ body {
     line-height: 1.5;
 }
 
-/* Header */
 header {
     background: var(--bg-surface);
     color: var(--text-main);
@@ -71,7 +70,6 @@ header {
     border-color: var(--primary);
 }
 
-/* Main Container */
 .container {
     width: 92%;
     max-width: 1000px;
@@ -102,7 +100,6 @@ h1 {
     margin-bottom: 32px;
 }
 
-/* Red Accent Upload Box */
 .upload-box {
     display: flex;
     flex-direction: column;
@@ -111,7 +108,7 @@ h1 {
     border: 2px dashed var(--primary);
     padding: 40px 20px;
     border-radius: 12px;
-    background: #2d1a1a; /* Very dark red/tint hint */
+    background: #2d1a1a;
     text-align: center;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -165,30 +162,70 @@ h1 {
     background: var(--primary-hover);
 }
 
-/* File Meta Info */
-.file-info {
+.file-queue {
     margin-top: 24px;
-    padding: 16px;
     background: var(--bg-main);
     border: 1px solid var(--border);
     border-radius: 8px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
+    padding: 16px;
+    max-height: 220px;
+    overflow-y: auto;
 }
 
-.file-info p {
+.file-queue-header {
+    display: flex;
+    justify-content: space-between;
     font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 6px;
+}
+
+.file-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-surface);
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    font-size: 13px;
+    border: 1px solid var(--border);
+}
+
+.file-item:last-child {
+    margin-bottom: 0;
+}
+
+.file-name {
+    color: var(--text-main);
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 60%;
+}
+
+.file-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
     color: var(--text-muted);
 }
 
-.file-info strong {
-    color: var(--text-main);
-    display: block;
-    margin-bottom: 2px;
+.remove-file {
+    color: #ef4444;
+    cursor: pointer;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 4px;
 }
 
-/* Dashboard Analysis Options */
+.remove-file:hover {
+    background: rgba(239, 68, 68, 0.2);
+}
+
 .options {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -228,10 +265,9 @@ h1 {
     accent-color: var(--primary);
 }
 
-/* Progress Bar */
 .progress {
     margin-top: 24px;
-    height: 8px;
+    height: 10px;
     background: var(--border);
     border-radius: 9999px;
     overflow: hidden;
@@ -242,10 +278,17 @@ h1 {
     width: 0%;
     height: 100%;
     background: var(--primary);
-    transition: width 0.2s ease;
+    transition: width 0.3s ease;
 }
 
-/* Button Row Layout */
+.status-label {
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 8px;
+    display: none;
+}
+
 .buttons {
     margin-top: 32px;
     display: grid;
@@ -272,49 +315,9 @@ h1 {
 .reset { background: transparent; color: var(--text-main); border: 1px solid var(--border) !important; }
 .reset:hover { background: var(--bg-surface-hover); }
 
-.download { background: #581c87; color: white; } /* Dark purple variant to fit dark theme */
+.download { background: #581c87; color: white; }
 .download:hover { background: #4c1d95; }
 
-/* Features Section Grid */
-.features {
-    margin-top: 48px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-}
-
-.feature {
-    background: var(--bg-surface);
-    padding: 24px;
-    border-radius: 12px;
-    border: 1px solid var(--border);
-    text-align: left;
-    transition: transform 0.2s;
-}
-
-.feature:hover {
-    transform: translateY(-2px);
-    border-color: var(--primary);
-}
-
-.feature-icon {
-    font-size: 24px;
-    margin-bottom: 12px;
-}
-
-.feature h3 {
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 6px;
-    color: var(--text-main);
-}
-
-.feature p {
-    font-size: 14px;
-    color: var(--text-muted);
-}
-
-/* Footer */
 footer {
     margin-top: 80px;
     border-top: 1px solid var(--border);
@@ -325,44 +328,43 @@ footer {
     font-size: 14px;
 }
 
-/* Responsive Breakpoints */
 @media(max-width: 768px) {
     header { padding: 16px 20px; }
     .container { margin: 24px auto; }
     .card { padding: 24px; }
     .options { grid-template-columns: 1fr; }
-    .file-info { grid-template-columns: 1fr; }
     .buttons { grid-template-columns: 1fr; }
-    .features { grid-template-columns: 1fr; }
 }
 </style>
 </head>
 <body>
 
 <header>
-    <div class="logo">
-        ⚡ AI Bill Analyzer
-    </div>
+    <div class="logo">⚡ AI Bill Analyzer</div>
     <button class="login-btn">Login</button>
 </header>
 
 <div class="container">
     <div class="card">
-        <h1>Upload Electricity Bill</h1>
-        <p class="subtitle">Upload PDF, JPG or PNG and let AI instantly analyze your energy usage.</p>
+        <h1>Batch Bill Processing</h1>
+        <p class="subtitle">Upload multiple files to extract and combine all bill data into a single CSV report.</p>
 
         <label class="upload-box" id="dropArea">
-            <div class="icon">📄</div>
-            <h2>Drag & Drop Bill Here</h2>
+            <div class="icon">📁</div>
+            <h2>Drag & Drop Multiple Bills Here</h2>
             <p>or</p>
-            <button type="button" class="browse-btn">Browse File</button>
-            <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png">
+            <button type="button" class="browse-btn">Browse Files</button>
+            <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png" multiple>
         </label>
 
-        <div class="file-info">
-            <p><strong>Selected File</strong> <span id="filename">None</span></p>
-            <p><strong>File Size</strong> <span id="filesize">-</span></p>
-            <p><strong>File Type</strong> <span id="filetype">-</span></p>
+        <div class="file-queue" id="fileQueue">
+            <div class="file-queue-header">
+                <span>Selected File Queue</span>
+                <span id="queueCount">0 files selected</span>
+            </div>
+            <div id="fileList">
+                <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-top: 12px;">No files added yet.</p>
+            </div>
         </div>
 
         <div class="options">
@@ -377,45 +379,13 @@ footer {
         <div class="progress" id="progress">
             <div class="bar" id="bar"></div>
         </div>
+        <div class="status-label" id="statusLabel">Extracting and merging all files...</div>
 
         <div class="buttons">
-            <button class="upload" onclick="processBill(event)">Upload</button>
-            <button class="analyze" onclick="processBill(event)">Analyze</button>
-            <button class="reset" onclick="location.reload()">Reset</button>
-            <button class="download" onclick="processBill(event)">Download</button>
-        </div>
-    </div>
-
-    <div class="features">
-        <div class="feature">
-            <div class="feature-icon">📊</div>
-            <h3>Bill Analytics</h3>
-            <p>Detailed consumption analysis breakdown.</p>
-        </div>
-        <div class="feature">
-            <div class="feature-icon">⚡</div>
-            <h3>Energy Insights</h3>
-            <p>View visual energy usage trends instantly.</p>
-        </div>
-        <div class="feature">
-            <div class="feature-icon">💰</div>
-            <h3>Cost Savings</h3>
-            <p>Discover smart optimization opportunities.</p>
-        </div>
-        <div class="feature">
-            <div class="feature-icon">🌱</div>
-            <h3>Carbon Report</h3>
-            <p>Track your environmental impact automatically.</p>
-        </div>
-        <div class="feature">
-            <div class="feature-icon">🤖</div>
-            <h3>AI Suggestions</h3>
-            <p>Receive intelligent personalized recommendations.</p>
-        </div>
-        <div class="feature">
-            <div class="feature-icon">📈</div>
-            <h3>Usage Forecast</h3>
-            <p>Predict future electricity usage cycles accurately.</p>
+            <button class="upload" onclick="processBatch(event)">Upload All</button>
+            <button class="analyze" onclick="processBatch(event)">Analyze All</button>
+            <button class="reset" onclick="resetQueue()">Reset</button>
+            <button class="download" onclick="processBatch(event)">Download Single CSV</button>
         </div>
     </div>
 </div>
@@ -425,28 +395,69 @@ footer {
 </footer>
 
 <script>
-    // Active ngrok tunnel link
     const BACKEND_URL = "https://stunning-frayed-quiver.ngrok-free.dev"; 
 
     const fileInput = document.getElementById("fileInput");
     const dropArea = document.getElementById("dropArea");
+    const fileListContainer = document.getElementById("fileList");
+    const queueCount = document.getElementById("queueCount");
 
-    function updateFileDetails(file) {
-        if (file) {
-            document.getElementById("filename").innerText = file.name;
-            document.getElementById("filesize").innerText = (file.size / 1024).toFixed(2) + " KB";
-            document.getElementById("filetype").innerText = file.type || "application/pdf";
+    let selectedFiles = [];
+
+    function updateQueueUI() {
+        fileListContainer.innerHTML = "";
+        
+        if (selectedFiles.length === 0) {
+            fileListContainer.innerHTML = `<p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-top: 12px;">No files added yet.</p>`;
+            queueCount.innerText = "0 files selected";
+            return;
         }
+
+        queueCount.innerText = `${selectedFiles.length} file(s) selected`;
+
+        selectedFiles.forEach((file, index) => {
+            const item = document.createElement("div");
+            item.className = "file-item";
+            item.innerHTML = `
+                <span class="file-name" title="${file.name}">📄 ${file.name}</span>
+                <div class="file-meta">
+                    <span>${(file.size / 1024).toFixed(1)} KB</span>
+                    <span class="remove-file" onclick="removeFile(${index})">✕</span>
+                </div>
+            `;
+            fileListContainer.appendChild(item);
+        });
     }
 
-    // Display file details on manual browse select
+    function addFiles(newFiles) {
+        for (let file of newFiles) {
+            if (!selectedFiles.some(f => f.name === file.name && f.size === file.size)) {
+                selectedFiles.push(file);
+            }
+        }
+        updateQueueUI();
+    }
+
+    function removeFile(index) {
+        selectedFiles.splice(index, 1);
+        updateQueueUI();
+    }
+
+    function resetQueue() {
+        selectedFiles = [];
+        fileInput.value = "";
+        updateQueueUI();
+        document.getElementById("progress").style.display = "none";
+        document.getElementById("statusLabel").style.display = "none";
+        document.getElementById("bar").style.width = "0%";
+    }
+
     fileInput.addEventListener("change", function() {
         if (this.files.length) {
-            updateFileDetails(this.files[0]);
+            addFiles(this.files);
         }
     });
 
-    // Drag and Drop functionality
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         dropArea.addEventListener(eventName, (e) => {
             e.preventDefault();
@@ -464,14 +475,11 @@ footer {
 
     dropArea.addEventListener('drop', (e) => {
         const dt = e.dataTransfer;
-        const files = dt.files;
-        if (files.length) {
-            fileInput.files = files;
-            updateFileDetails(files[0]);
+        if (dt.files.length) {
+            addFiles(dt.files);
         }
     });
 
-    // Browse button handler
     const browseBtn = document.querySelector(".browse-btn");
     if (browseBtn) {
         browseBtn.onclick = function(e) {
@@ -480,27 +488,32 @@ footer {
         };
     }
 
-    // Process & Analyze function
-    async function processBill(e) {
+    // Single request batch handler
+    async function processBatch(e) {
         if (e) e.preventDefault();
 
-        if (!fileInput.files.length) {
-            alert("Please select a PDF bill to analyze first.");
+        if (selectedFiles.length === 0) {
+            alert("Please select at least one bill file to process.");
             return;
         }
 
-        const targetFile = fileInput.files[0];
-        const formData = new FormData();
-        formData.append("file", targetFile);
-
         const loaderWrapper = document.getElementById("progress");
         const activeBar = document.getElementById("bar");
-        if (loaderWrapper) loaderWrapper.style.display = "block";
-        if (activeBar) activeBar.style.width = "40%";
+        const statusLabel = document.getElementById("statusLabel");
+
+        loaderWrapper.style.display = "block";
+        statusLabel.style.display = "block";
+        activeBar.style.width = "40%";
+        statusLabel.innerText = `Extracting data from ${selectedFiles.length} file(s)...`;
+
+        const formData = new FormData();
+        // Append all files under the key "files" expected by FastAPI List[UploadFile]
+        selectedFiles.forEach(file => {
+            formData.append("files", file);
+        });
 
         try {
-            // Send request to backend via ngrok with warning bypass header
-            const response = await fetch(`${BACKEND_URL}/extract_bill/`, {
+            const response = await fetch(`${BACKEND_URL}/extract_bills_batch/`, {
                 method: "POST",
                 headers: {
                     "ngrok-skip-browser-warning": "true"
@@ -510,30 +523,30 @@ footer {
 
             if (!response.ok) {
                 const errorText = await response.text();
-                throw new Error(`Server returned error ${response.status}: ${errorText}`);
+                throw new Error(`Server error ${response.status}: ${errorText}`);
             }
 
-            if (activeBar) activeBar.style.width = "100%";
+            activeBar.style.width = "100%";
+            statusLabel.innerText = "Processing complete! Downloading merged CSV...";
 
-            // Download extracted CSV
             const dataBlob = await response.blob();
             const blobUrl = window.URL.createObjectURL(dataBlob);
             
             const downloader = document.createElement("a");
             downloader.href = blobUrl;
-            downloader.download = `extracted_${targetFile.name.replace('.pdf', '')}.csv`;
+            downloader.download = `consolidated_bills_report.csv`;
             document.body.appendChild(downloader);
             downloader.click();
             downloader.remove();
 
-            setTimeout(() => { 
-                alert("Success! The bill details were parsed, backed up to Mega.io, and your CSV has been downloaded."); 
-            }, 200);
+            setTimeout(() => {
+                alert(`Successfully processed all ${selectedFiles.length} files into one CSV!`);
+            }, 300);
 
-        } catch (error) {
-            console.error("Extraction error:", error);
-            alert(`Error processing bill: ${error.message}\nMake sure Uvicorn and ngrok are running!`);
-            if (activeBar) activeBar.style.width = "0%";
+        } catch (err) {
+            console.error("Batch error:", err);
+            alert(`Error processing files: ${err.message}`);
+            activeBar.style.width = "0%";
         }
     }
 </script>

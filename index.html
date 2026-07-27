@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Electricity Bill Analyzer</title>
+
+<style>
+:root {
+    --bg-main: #0f172a;        /* Deep charcoal/black */
+    --bg-surface: #1e293b;     /* Card surface black */
+    --bg-surface-hover: #273549; 
+    --primary: #dc2626;        /* Crimson Red */
+    --primary-hover: #b91c1c;  /* Darker Red */
+    --success: #16a34a;
+    --text-main: #f8fafc;      /* Crisp white text */
+    --text-muted: #94a3b8;     /* Muted grey text */
+    --border: #334155;         /* Subtle border line */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    line-height: 1.5;
+}
+
+/* Header */
+header {
+    background: var(--bg-surface);
+    color: var(--text-main);
+    padding: 16px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+    font-weight: 700;
+    gap: 8px;
+    color: var(--primary);
+}
+
+.login-btn {
+    background: transparent;
+    color: var(--text-main);
+    padding: 8px 16px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.login-btn:hover {
+    background: var(--bg-main);
+    border-color: var(--primary);
+}
+
+/* Main Container */
+.container {
+    width: 92%;
+    max-width: 1000px;
+    margin: 48px auto;
+}
+
+.card {
+    background: var(--bg-surface);
+    padding: 40px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.3);
+}
+
+h1 {
+    text-align: center;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    margin-bottom: 8px;
+    color: var(--text-main);
+}
+
+.subtitle {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 15px;
+    margin-bottom: 32px;
+}
+
+/* Red Accent Upload Box */
+.upload-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed var(--primary);
+    padding: 40px 20px;
+    border-radius: 12px;
+    background: #2d1a1a; /* Very dark red/tint hint */
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+}
+
+.upload-box:hover {
+    background: #3f1f1f;
+    border-color: var(--primary-hover);
+}
+
+.upload-box input {
+    display: none;
+}
+
+.icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+}
+
+.upload-box h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.upload-box p {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin: 4px 0 12px 0;
+}
+
+.browse-btn {
+    background: var(--primary);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.browse-btn:hover {
+    background: var(--primary-hover);
+}
+
+/* File Meta Info */
+.file-info {
+    margin-top: 24px;
+    padding: 16px;
+    background: var(--bg-main);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.file-info p {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.file-info strong {
+    color: var(--text-main);
+    display: block;
+    margin-bottom: 2px;
+}
+
+/* Dashboard Analysis Options */
+.options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 32px;
+}
+
+.option {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    padding: 14px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.option:hover {
+    background: var(--bg-surface-hover);
+    border-color: var(--primary);
+}
+
+.option label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.option input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--primary);
+}
+
+/* Progress Bar */
+.progress {
+    margin-top: 24px;
+    height: 8px;
+    background: var(--border);
+    border-radius: 9999px;
+    overflow: hidden;
+    display: none;
+}
+
+.bar {
+    width: 0%;
+    height: 100%;
+    background: var(--primary);
+    transition: width 0.2s ease;
+}
+
+/* Button Row Layout */
+.buttons {
+    margin-top: 32px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.buttons button {
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.upload { background: var(--primary); color: white; }
+.upload:hover { background: var(--primary-hover); }
+
+.analyze { background: var(--success); color: white; }
+.analyze:hover { background: #15803d; }
+
+.reset { background: transparent; color: var(--text-main); border: 1px solid var(--border) !important; }
+.reset:hover { background: var(--bg-surface-hover); }
+
+.download { background: #581c87; color: white; } /* Dark purple variant to fit dark theme */
+.download:hover { background: #4c1d95; }
+
+/* Features Section Grid */
+.features {
+    margin-top: 48px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.feature {
+    background: var(--bg-surface);
+    padding: 24px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    text-align: left;
+    transition: transform 0.2s;
+}
+
+.feature:hover {
+    transform: translateY(-2px);
+    border-color: var(--primary);
+}
+
+.feature-icon {
+    font-size: 24px;
+    margin-bottom: 12px;
+}
+
+.feature h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--text-main);
+}
+
+.feature p {
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+/* Footer */
+footer {
+    margin-top: 80px;
+    border-top: 1px solid var(--border);
+    background: var(--bg-surface);
+    color: var(--text-muted);
+    padding: 24px;
+    text-align: center;
+    font-size: 14px;
+}
+
+/* Responsive Breakpoints */
+@media(max-width: 768px) {
+    header { padding: 16px 20px; }
+    .container { margin: 24px auto; }
+    .card { padding: 24px; }
+    .options { grid-template-columns: 1fr; }
+    .file-info { grid-template-columns: 1fr; }
+    .buttons { grid-template-columns: 1fr; }
+    .features { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        ⚡ AI Bill Analyzer
+    </div>
+    <button class="login-btn">Login</button>
+</header>
+
+<div class="container">
+    <div class="card">
+        <h1>Upload Electricity Bill</h1>
+        <p class="subtitle">Upload PDF, JPG or PNG and let AI instantly analyze your energy usage.</p>
+
+        <label class="upload-box">
+            <div class="icon">📄</div>
+            <h2>Drag & Drop Bill Here</h2>
+            <p>or</p>
+            <button type="button" class="browse-btn">Browse File</button>
+            <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png">
+        </label>
+
+        <div class="file-info">
+            <p><strong>Selected File</strong> <span id="filename">None</span></p>
+            <p><strong>File Size</strong> <span id="filesize">-</span></p>
+            <p><strong>File Type</strong> <span id="filetype">-</span></p>
+        </div>
+
+        <div class="options">
+            <div class="option"><label><input type="checkbox" checked> OCR Extraction</label></div>
+            <div class="option"><label><input type="checkbox" checked> Cost Analysis</label></div>
+            <div class="option"><label><input type="checkbox" checked> Energy Usage</label></div>
+            <div class="option"><label><input type="checkbox"> Carbon Footprint</label></div>
+            <div class="option"><label><input type="checkbox"> AI Recommendations</label></div>
+            <div class="option"><label><input type="checkbox"> Historical Comparison</label></div>
+        </div>
+
+        <div class="progress" id="progress">
+            <div class="bar" id="bar"></div>
+        </div>
+
+        <div class="buttons">
+            <button class="upload" onclick="uploadFile()">Upload</button>
+            <button class="analyze">Analyze</button>
+            <button class="reset" onclick="location.reload()">Reset</button>
+            <button class="download">Download</button>
+        </div>
+    </div>
+
+    <div class="features">
+        <div class="feature">
+            <div class="feature-icon">📊</div>
+            <h3>Bill Analytics</h3>
+            <p>Detailed consumption analysis breakdown.</p>
+        </div>
+        <div class="feature">
+            <div class="feature-icon">⚡</div>
+            <h3>Energy Insights</h3>
+            <p>View visual energy usage trends instantly.</p>
+        </div>
+        <div class="feature">
+            <div class="feature-icon">💰</div>
+            <h3>Cost Savings</h3>
+            <p>Discover smart optimization opportunities.</p>
+        </div>
+        <div class="feature">
+            <div class="feature-icon">🌱</div>
+            <h3>Carbon Report</h3>
+            <p>Track your environmental impact automatically.</p>
+        </div>
+        <div class="feature">
+            <div class="feature-icon">🤖</div>
+            <h3>AI Suggestions</h3>
+            <p>Receive intelligent personalized recommendations.</p>
+        </div>
+        <div class="feature">
+            <div class="feature-icon">📈</div>
+            <h3>Usage Forecast</h3>
+            <p>Predict future electricity usage cycles accurately.</p>
+        </div>
+    </div>
+</div>
+
+<footer>
+    AI Electricity Bill Analyzer &copy; 2026
+</footer>
+
+<script>
+    // Point this to your local running Uvicorn server
+    const BACKEND_URL = "https://stunning-frayed-quiver.ngrok-free.dev"; 
+
+    const fileInput = document.getElementById("fileInput");
+
+    // Display file details when a user selects a PDF
+    fileInput.addEventListener("change", function() {
+        if (this.files.length) {
+            let file = this.files[0];
+            document.getElementById("filename").innerText = file.name;
+            document.getElementById("filesize").innerText = (file.size / 1024).toFixed(2) + " KB";
+            document.getElementById("filetype").innerText = file.type || "Application/pdf";
+        }
+    });
+
+    // Make the custom browse button trigger the hidden file selector
+    const browseBtn = document.querySelector(".browse-btn");
+    if (browseBtn) {
+        browseBtn.onclick = function(e) {
+            e.preventDefault();
+            fileInput.click();
+        };
+    }
+
+    // Connect the Analyze button to your backend
+    const analyzeBtn = document.querySelector(".analyze");
+    if (analyzeBtn) {
+        analyzeBtn.onclick = async function(e) {
+            e.preventDefault();
+
+            if (!fileInput.files.length) {
+                alert("Please select a PDF bill to analyze first.");
+                return;
+            }
+
+            const targetFile = fileInput.files[0];
+            const formData = new FormData();
+            formData.append("file", targetFile);
+
+            // Handle progress bar UI if they exist in your HTML
+            const loaderWrapper = document.getElementById("progress");
+            const activeBar = document.getElementById("bar");
+            if (loaderWrapper) loaderWrapper.style.display = "block";
+            if (activeBar) activeBar.style.width = "50%";
+
+            try {
+                // Send the file over the local network to Uvicorn
+                const response = await fetch(`${BACKEND_URL}/api/process-bill`, {
+                    method: "POST",
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || "Failed to process bill.");
+                }
+
+                if (activeBar) activeBar.style.width = "100%";
+
+                // Receive the CSV and trigger an automatic browser download
+                const dataBlob = await response.blob();
+                const blobUrl = window.URL.createObjectURL(dataBlob);
+                
+                const downloader = document.createElement("a");
+                downloader.href = blobUrl;
+                downloader.download = `extracted_${targetFile.name.replace('.pdf', '')}.csv`;
+                document.body.appendChild(downloader);
+                downloader.click();
+                downloader.remove();
+
+                setTimeout(() => { 
+                    alert("Success! The bill details were parsed, backed up to Mega, and your CSV is downloaded."); 
+                }, 200);
+
+            } catch (error) {
+                alert(`Error: ${error.message}`);
+                if (activeBar) activeBar.style.width = "0%";
+            }
+        };
+    }
+</script>
+
+</body>
+</html>

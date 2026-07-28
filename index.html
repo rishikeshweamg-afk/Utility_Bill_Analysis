@@ -4,35 +4,50 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI Electricity Bill Analyzer - Consolidated Export</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
 :root {
-    --bg-main: #0f172a;        
-    --bg-surface: #1e293b;     
-    --bg-surface-hover: #273549; 
-    --primary: #dc2626;        
-    --primary-hover: #b91c1c;  
-    --success: #16a34a;
-    --text-main: #f8fafc;      
-    --text-muted: #94a3b8;     
-    --border: #334155;         
+    --bg-main: #0a0a0c;
+    --bg-surface: #121216;
+    --bg-surface-elevated: #1a1a22;
+    --bg-surface-hover: #22222d;
+    --border: #23232e;
+    --border-highlight: #343444;
+    
+    /* Professional Crimson & Red Palette */
+    --primary: #dc2626;
+    --primary-hover: #b91c1c;
+    --primary-light: #ef4444;
+    --primary-glow: rgba(220, 38, 38, 0.15);
+    
+    --success: #10b981;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --text-subtle: #64748b;
 }
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 body {
     background-color: var(--bg-main);
     color: var(--text-main);
     line-height: 1.5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 header {
-    background: var(--bg-surface);
+    background: rgba(18, 18, 22, 0.8);
+    backdrop-filter: blur(12px);
     color: var(--text-main);
     padding: 16px 40px;
     display: flex;
@@ -47,33 +62,48 @@ header {
 .logo {
     display: flex;
     align-items: center;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 700;
-    gap: 8px;
-    color: var(--primary);
+    gap: 10px;
+    color: var(--text-main);
+    letter-spacing: -0.02em;
+}
+
+.logo-icon {
+    width: 28px;
+    height: 28px;
+    background: linear-gradient(135deg, var(--primary), #991b1b);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    box-shadow: 0 0 12px var(--primary-glow);
 }
 
 .login-btn {
-    background: transparent;
+    background: var(--bg-surface-elevated);
     color: var(--text-main);
-    padding: 8px 16px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
+    padding: 8px 18px;
+    border: 1px solid var(--border-highlight);
+    border-radius: 6px;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 13px;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
 }
 
 .login-btn:hover {
-    background: var(--bg-main);
+    background: var(--bg-surface-hover);
     border-color: var(--primary);
+    color: white;
 }
 
 .container {
     width: 92%;
-    max-width: 1000px;
+    max-width: 960px;
     margin: 48px auto;
+    flex: 1;
 }
 
 .card {
@@ -81,12 +111,12 @@ header {
     padding: 40px;
     border-radius: 16px;
     border: 1px solid var(--border);
-    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.3);
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
 }
 
 h1 {
     text-align: center;
-    font-size: 28px;
+    font-size: 26px;
     font-weight: 700;
     letter-spacing: -0.025em;
     margin-bottom: 8px;
@@ -96,7 +126,7 @@ h1 {
 .subtitle {
     text-align: center;
     color: var(--text-muted);
-    font-size: 15px;
+    font-size: 14px;
     margin-bottom: 32px;
 }
 
@@ -105,10 +135,10 @@ h1 {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    border: 2px dashed var(--primary);
-    padding: 40px 20px;
+    border: 2px dashed var(--border-highlight);
+    padding: 44px 20px;
     border-radius: 12px;
-    background: #2d1a1a;
+    background: rgba(26, 26, 34, 0.4);
     text-align: center;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -116,13 +146,13 @@ h1 {
 }
 
 .upload-box.dragover {
-    background: #4a1f1f;
-    border-color: #ef4444;
+    background: var(--primary-glow);
+    border-color: var(--primary-light);
 }
 
 .upload-box:hover {
-    background: #3f1f1f;
-    border-color: var(--primary-hover);
+    background: rgba(220, 38, 38, 0.05);
+    border-color: var(--primary);
 }
 
 .upload-box input {
@@ -130,56 +160,71 @@ h1 {
 }
 
 .icon {
-    font-size: 48px;
-    margin-bottom: 12px;
+    width: 48px;
+    height: 48px;
+    background: var(--bg-surface-elevated);
+    border: 1px solid var(--border-highlight);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    color: var(--primary-light);
 }
 
 .upload-box h2 {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 600;
     color: var(--text-main);
 }
 
 .upload-box p {
-    font-size: 14px;
-    color: var(--text-muted);
-    margin: 4px 0 12px 0;
+    font-size: 13px;
+    color: var(--text-subtle);
+    margin: 4px 0 16px 0;
 }
 
 .browse-btn {
-    background: var(--primary);
-    color: white;
-    padding: 10px 20px;
-    border: none;
+    background: var(--bg-surface-elevated);
+    color: var(--text-main);
+    padding: 8px 18px;
+    border: 1px solid var(--border-highlight);
     border-radius: 6px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
-    transition: background 0.2s;
+    transition: all 0.2s;
 }
 
 .browse-btn:hover {
-    background: var(--primary-hover);
+    background: var(--border-highlight);
+    color: white;
 }
 
 .file-queue {
-    margin-top: 24px;
+    margin-top: 28px;
     background: var(--bg-main);
     border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 16px;
-    max-height: 220px;
-    overflow-y: auto;
+    border-radius: 10px;
+    padding: 18px;
 }
 
 .file-queue-header {
     display: flex;
     justify-content: space-between;
-    font-size: 13px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
     color: var(--text-muted);
     margin-bottom: 12px;
     border-bottom: 1px solid var(--border);
-    padding-bottom: 6px;
+    padding-bottom: 8px;
+}
+
+#fileList {
+    max-height: 200px;
+    overflow-y: auto;
 }
 
 .file-item {
@@ -187,7 +232,7 @@ h1 {
     justify-content: space-between;
     align-items: center;
     background: var(--bg-surface);
-    padding: 8px 12px;
+    padding: 10px 14px;
     border-radius: 6px;
     margin-bottom: 8px;
     font-size: 13px;
@@ -204,7 +249,7 @@ h1 {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    max-width: 60%;
+    max-width: 65%;
 }
 
 .file-meta {
@@ -212,18 +257,21 @@ h1 {
     align-items: center;
     gap: 12px;
     color: var(--text-muted);
+    font-size: 12px;
 }
 
 .remove-file {
-    color: #ef4444;
+    color: var(--text-subtle);
     cursor: pointer;
     font-weight: bold;
     padding: 2px 6px;
     border-radius: 4px;
+    transition: all 0.2s;
 }
 
 .remove-file:hover {
-    background: rgba(239, 68, 68, 0.2);
+    color: var(--primary-light);
+    background: rgba(239, 68, 68, 0.1);
 }
 
 .options {
@@ -234,19 +282,18 @@ h1 {
 }
 
 .option {
-    background: var(--bg-surface);
+    background: var(--bg-surface-elevated);
     border: 1px solid var(--border);
-    padding: 14px;
+    padding: 12px 14px;
     border-radius: 8px;
     display: flex;
     align-items: center;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: border-color 0.2s;
 }
 
 .option:hover {
-    background: var(--bg-surface-hover);
-    border-color: var(--primary);
+    border-color: var(--border-highlight);
 }
 
 .option label {
@@ -255,20 +302,22 @@ h1 {
     gap: 10px;
     width: 100%;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
+    color: var(--text-main);
 }
 
 .option input[type="checkbox"] {
     width: 16px;
     height: 16px;
     accent-color: var(--primary);
+    border-radius: 4px;
 }
 
 .progress {
-    margin-top: 24px;
-    height: 10px;
-    background: var(--border);
+    margin-top: 28px;
+    height: 6px;
+    background: var(--bg-surface-elevated);
     border-radius: 9999px;
     overflow: hidden;
     display: none;
@@ -277,7 +326,7 @@ h1 {
 .bar {
     width: 0%;
     height: 100%;
-    background: var(--primary);
+    background: linear-gradient(90deg, var(--primary), var(--primary-light));
     transition: width 0.3s ease;
 }
 
@@ -285,7 +334,7 @@ h1 {
     text-align: center;
     font-size: 13px;
     color: var(--text-muted);
-    margin-top: 8px;
+    margin-top: 10px;
     display: none;
 }
 
@@ -299,33 +348,58 @@ h1 {
 .buttons button {
     padding: 12px;
     border: none;
-    border-radius: 8px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
 }
 
-.upload { background: var(--primary); color: white; }
-.upload:hover { background: var(--primary-hover); }
+.upload { 
+    background: var(--primary); 
+    color: white; 
+}
+.upload:hover { 
+    background: var(--primary-hover); 
+    box-shadow: 0 0 15px var(--primary-glow);
+}
 
-.analyze { background: var(--success); color: white; }
-.analyze:hover { background: #15803d; }
+.analyze { 
+    background: var(--bg-surface-elevated); 
+    color: var(--text-main); 
+    border: 1px solid var(--border-highlight) !important;
+}
+.analyze:hover { 
+    border-color: var(--primary) !important;
+}
 
-.reset { background: transparent; color: var(--text-main); border: 1px solid var(--border) !important; }
-.reset:hover { background: var(--bg-surface-hover); }
+.reset { 
+    background: transparent; 
+    color: var(--text-muted); 
+    border: 1px solid var(--border) !important; 
+}
+.reset:hover { 
+    background: var(--bg-surface-hover); 
+    color: var(--text-main);
+}
 
-.download { background: #581c87; color: white; }
-.download:hover { background: #4c1d95; }
+.download { 
+    background: var(--bg-surface-elevated); 
+    color: var(--text-main); 
+    border: 1px solid var(--border-highlight) !important;
+}
+.download:hover { 
+    border-color: var(--primary) !important;
+}
 
 footer {
-    margin-top: 80px;
+    margin-top: auto;
     border-top: 1px solid var(--border);
     background: var(--bg-surface);
-    color: var(--text-muted);
-    padding: 24px;
+    color: var(--text-subtle);
+    padding: 20px;
     text-align: center;
-    font-size: 14px;
+    font-size: 13px;
 }
 
 @media(max-width: 768px) {
@@ -340,7 +414,10 @@ footer {
 <body>
 
 <header>
-    <div class="logo">⚡ AI Bill Analyzer</div>
+    <div class="logo">
+        <div class="logo-icon">⚡</div>
+        <span>AI Bill Analyzer</span>
+    </div>
     <button class="login-btn">Login</button>
 </header>
 
@@ -350,9 +427,11 @@ footer {
         <p class="subtitle">Upload multiple files to extract and combine all bill data into a single CSV report.</p>
 
         <label class="upload-box" id="dropArea">
-            <div class="icon">📁</div>
+            <div class="icon">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+            </div>
             <h2>Drag & Drop Multiple Bills Here</h2>
-            <p>or</p>
+            <p>or select files from your computer</p>
             <button type="button" class="browse-btn">Browse Files</button>
             <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png" multiple>
         </label>
@@ -363,7 +442,7 @@ footer {
                 <span id="queueCount">0 files selected</span>
             </div>
             <div id="fileList">
-                <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-top: 12px;">No files added yet.</p>
+                <p style="text-align: center; color: var(--text-subtle); font-size: 13px; padding: 12px 0;">No files added yet.</p>
             </div>
         </div>
 
@@ -408,7 +487,7 @@ footer {
         fileListContainer.innerHTML = "";
         
         if (selectedFiles.length === 0) {
-            fileListContainer.innerHTML = `<p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-top: 12px;">No files added yet.</p>`;
+            fileListContainer.innerHTML = `<p style="text-align: center; color: var(--text-subtle); font-size: 13px; padding: 12px 0;">No files added yet.</p>`;
             queueCount.innerText = "0 files selected";
             return;
         }

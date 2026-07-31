@@ -314,6 +314,43 @@ h1 {
     border-radius: 4px;
 }
 
+.vendor-option {
+    grid-column: span 3;
+    background: var(--bg-surface-elevated);
+    border: 1px solid var(--border);
+    padding: 14px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.vendor-option label {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.vendor-select {
+    background: var(--bg-main);
+    color: var(--text-main);
+    border: 1px solid var(--border-highlight);
+    padding: 10px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    outline: none;
+    font-size: 13px;
+    width: 100%;
+    font-weight: 500;
+    transition: border-color 0.2s;
+}
+
+.vendor-select:focus {
+    border-color: var(--primary);
+}
+
 .progress {
     margin-top: 28px;
     height: 6px;
@@ -407,6 +444,7 @@ footer {
     .container { margin: 24px auto; }
     .card { padding: 24px; }
     .options { grid-template-columns: 1fr; }
+    .vendor-option { grid-column: span 1; }
     .buttons { grid-template-columns: 1fr; }
 }
 </style>
@@ -447,6 +485,14 @@ footer {
         </div>
 
         <div class="options">
+            <div class="vendor-option">
+                <label for="vendorSelect">Select Vendor / Utility Template</label>
+                <select id="vendorSelect" class="vendor-select">
+                    <option value="we_energies">We Energies</option>
+                    <option value="alliant_energy">Alliant Energy</option>
+                </select>
+            </div>
+
             <div class="option"><label><input type="checkbox" checked> OCR Extraction</label></div>
             <div class="option"><label><input type="checkbox" checked> Cost Analysis</label></div>
             <div class="option"><label><input type="checkbox" checked> Energy Usage</label></div>
@@ -567,7 +613,7 @@ footer {
         };
     }
 
-    // Single request batch handler
+    // Single request batch handler with dynamic Vendor support
     async function processBatch(e) {
         if (e) e.preventDefault();
 
@@ -576,6 +622,9 @@ footer {
             return;
         }
 
+        const vendorSelect = document.getElementById("vendorSelect");
+        const selectedVendor = vendorSelect ? vendorSelect.value : "we_energies";
+
         const loaderWrapper = document.getElementById("progress");
         const activeBar = document.getElementById("bar");
         const statusLabel = document.getElementById("statusLabel");
@@ -583,9 +632,11 @@ footer {
         loaderWrapper.style.display = "block";
         statusLabel.style.display = "block";
         activeBar.style.width = "40%";
-        statusLabel.innerText = `Extracting data from ${selectedFiles.length} file(s)...`;
+        statusLabel.innerText = `Extracting data from ${selectedFiles.length} file(s) using template [${selectedVendor}]...`;
 
         const formData = new FormData();
+        formData.append("vendor", selectedVendor);
+        
         // Append all files under the key "files" expected by FastAPI List[UploadFile]
         selectedFiles.forEach(file => {
             formData.append("files", file);
@@ -613,7 +664,7 @@ footer {
             
             const downloader = document.createElement("a");
             downloader.href = blobUrl;
-            downloader.download = `consolidated_bills_report.csv`;
+            downloader.download = `consolidated_bills_${selectedVendor}.csv`;
             document.body.appendChild(downloader);
             downloader.click();
             downloader.remove();

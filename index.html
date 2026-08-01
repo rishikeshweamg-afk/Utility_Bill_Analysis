@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Electricity Bill Analyzer - Consolidated Export</title>
+<title>AI Bill Analyzer - Consolidated Export</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -321,6 +321,12 @@ h1 {
     padding: 14px;
     border-radius: 8px;
     display: flex;
+    gap: 16px;
+}
+
+.vendor-group {
+    flex: 1;
+    display: flex;
     flex-direction: column;
     gap: 8px;
 }
@@ -444,7 +450,7 @@ footer {
     .container { margin: 24px auto; }
     .card { padding: 24px; }
     .options { grid-template-columns: 1fr; }
-    .vendor-option { grid-column: span 1; }
+    .vendor-option { grid-column: span 1; flex-direction: column; }
     .buttons { grid-template-columns: 1fr; }
 }
 </style>
@@ -486,11 +492,20 @@ footer {
 
         <div class="options">
             <div class="vendor-option">
-                <label for="vendorSelect">Select Vendor / Utility Template</label>
-                <select id="vendorSelect" class="vendor-select">
-                    <option value="we_energies">We Energies</option>
-                    <option value="alliant_energy">Alliant Energy</option>
-                </select>
+                <div class="vendor-group">
+                    <label for="vendorSelect">Select Vendor</label>
+                    <select id="vendorSelect" class="vendor-select">
+                        <option value="we_energies" selected>We Energies</option>
+                        <option value="alliant_energy">Alliant Energy</option>
+                    </select>
+                </div>
+                <div class="vendor-group">
+                    <label for="utilitySelect">Select Utility Type</label>
+                    <select id="utilitySelect" class="vendor-select">
+                        <option value="electric" selected>Electric</option>
+                        <option value="gas">Gas</option>
+                    </select>
+                </div>
             </div>
 
             <div class="option"><label><input type="checkbox" checked> OCR Extraction</label></div>
@@ -613,7 +628,7 @@ footer {
         };
     }
 
-    // Single request batch handler with dynamic Vendor support
+    // Single request batch handler with dynamic Vendor & Utility Type support
     async function processBatch(e) {
         if (e) e.preventDefault();
 
@@ -623,7 +638,10 @@ footer {
         }
 
         const vendorSelect = document.getElementById("vendorSelect");
+        const utilitySelect = document.getElementById("utilitySelect");
+
         const selectedVendor = vendorSelect ? vendorSelect.value : "we_energies";
+        const selectedUtility = utilitySelect ? utilitySelect.value : "electric";
 
         const loaderWrapper = document.getElementById("progress");
         const activeBar = document.getElementById("bar");
@@ -632,10 +650,11 @@ footer {
         loaderWrapper.style.display = "block";
         statusLabel.style.display = "block";
         activeBar.style.width = "40%";
-        statusLabel.innerText = `Extracting data from ${selectedFiles.length} file(s) using template [${selectedVendor}]...`;
+        statusLabel.innerText = `Extracting data from ${selectedFiles.length} file(s) [${selectedVendor} - ${selectedUtility.toUpperCase()}]...`;
 
         const formData = new FormData();
         formData.append("vendor", selectedVendor);
+        formData.append("utility_type", selectedUtility);
         
         // Append all files under the key "files" expected by FastAPI List[UploadFile]
         selectedFiles.forEach(file => {
@@ -664,7 +683,7 @@ footer {
             
             const downloader = document.createElement("a");
             downloader.href = blobUrl;
-            downloader.download = `consolidated_bills_${selectedVendor}.csv`;
+            downloader.download = `consolidated_bills_${selectedVendor}_${selectedUtility}.csv`;
             document.body.appendChild(downloader);
             downloader.click();
             downloader.remove();
